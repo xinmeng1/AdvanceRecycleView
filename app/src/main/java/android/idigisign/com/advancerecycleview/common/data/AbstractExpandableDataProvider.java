@@ -16,6 +16,8 @@
 
 package android.idigisign.com.advancerecycleview.common.data;
 
+import java.util.ArrayList;
+
 public abstract class AbstractExpandableDataProvider {
     public static abstract class BaseData {
 
@@ -48,4 +50,7 @@ public abstract class AbstractExpandableDataProvider {
     public abstract void removeChildItem(int groupPosition, int childPosition);
 
     public abstract long undoLastRemoval();
+
+
+    public abstract void addItem(String groupText, ArrayList<String> childText);
 }

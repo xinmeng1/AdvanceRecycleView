@@ -9,4 +9,8 @@
     <dimen name="list_item2_height">96dp</dimen>
     <dimen name="list_group_item_height">96dp</dimen>
     <dimen name="list_group_item_with_add_remove_buttons_height">108dp</dimen>
+
+    <dimen name="fab_margin">@dimen/fab_margin_default</dimen>
+    <dimen name="fab_margin_default">16dp</dimen>
+    <dimen name="fab_margin_tablet">24dp</dimen>
 </resources>

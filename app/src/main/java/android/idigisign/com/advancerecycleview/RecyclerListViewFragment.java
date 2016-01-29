@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -44,6 +45,8 @@ import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeMana
 import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchActionGuardManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 
+import java.util.ArrayList;
+
 public class RecyclerListViewFragment extends Fragment
     implements RecyclerViewExpandableItemManager.OnGroupCollapseListener,
         RecyclerViewExpandableItemManager.OnGroupExpandListener,ExpandableItemPinnedMessageDialogFragment.EventListener{
@@ -62,6 +65,8 @@ public class RecyclerListViewFragment extends Fragment
     private static final String FRAGMENT_LIST_VIEW = "list view";
     private static final String FRAGMENT_TAG_ITEM_PINNED_DIALOG = "item pinned dialog";
 
+    private AbstractExpandableDataProvider dataProvider;
+
     public RecyclerListViewFragment() {
         super();
     }
@@ -74,6 +79,8 @@ public class RecyclerListViewFragment extends Fragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        dataProvider = getDataProvider();
 
         //noinspection ConstantConditions
         mRecyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
@@ -99,7 +106,7 @@ public class RecyclerListViewFragment extends Fragment
 
         //adapter
         final MyExpandableDraggableSwipeableItemAdapter myItemAdapter =
-                new MyExpandableDraggableSwipeableItemAdapter(mRecyclerViewExpandableItemManager, getDataProvider());
+                new MyExpandableDraggableSwipeableItemAdapter(mRecyclerViewExpandableItemManager, dataProvider);
 
         myItemAdapter.setEventListener(new MyExpandableDraggableSwipeableItemAdapter.EventListener() {
             @Override
@@ -165,6 +172,23 @@ public class RecyclerListViewFragment extends Fragment
         mRecyclerViewSwipeManager.attachRecyclerView(mRecyclerView);
         mRecyclerViewDragDropManager.attachRecyclerView(mRecyclerView);
         mRecyclerViewExpandableItemManager.attachRecyclerView(mRecyclerView);
+
+
+        //ADD action for fab to add a item to the list
+        FloatingActionButton fabBtn = (FloatingActionButton) getActivity().findViewById(R.id.fab_add);
+        fabBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Add a item to the list
+                ArrayList<String> childTextList = new ArrayList<String>();
+
+                childTextList.add("test child 1");
+                childTextList.add("test child 2");
+                dataProvider.addItem("TestAdd",childTextList);
+                myItemAdapter.notifyDataSetChanged();
+            }
+        });
+
     }
 
     @Override
@@ -298,11 +322,11 @@ public class RecyclerListViewFragment extends Fragment
 
         if (childPosition == RecyclerView.NO_POSITION) {
             // group item
-            getDataProvider().getGroupItem(groupPosition).setPinned(ok);
+            dataProvider.getGroupItem(groupPosition).setPinned(ok);
             ((RecyclerListViewFragment) fragment).notifyGroupItemChanged(groupPosition);
         } else {
             // child item
-            getDataProvider().getChildItem(groupPosition, childPosition).setPinned(ok);
+            dataProvider.getChildItem(groupPosition, childPosition).setPinned(ok);
             ((RecyclerListViewFragment) fragment).notifyChildItemChanged(groupPosition, childPosition);
         }
     }
@@ -387,7 +411,7 @@ public class RecyclerListViewFragment extends Fragment
 
     public void onGroupItemClickedAction(int groupPosition) {
         final Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(FRAGMENT_LIST_VIEW);
-        AbstractExpandableDataProvider.GroupData data = getDataProvider().getGroupItem(groupPosition);
+        AbstractExpandableDataProvider.GroupData data = dataProvider.getGroupItem(groupPosition);
 
         if (data.isPinned()) {
             // unpin if tapped the pinned item
@@ -398,7 +422,7 @@ public class RecyclerListViewFragment extends Fragment
 
     public void onChildItemClickedAction(int groupPosition, int childPosition) {
         final Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(FRAGMENT_LIST_VIEW);
-        AbstractExpandableDataProvider.ChildData data = getDataProvider().getChildItem(groupPosition, childPosition);
+        AbstractExpandableDataProvider.ChildData data = dataProvider.getChildItem(groupPosition, childPosition);
 
         if (data.isPinned()) {
             // unpin if tapped the pinned item
@@ -409,7 +433,7 @@ public class RecyclerListViewFragment extends Fragment
 
     private void onItemUndoActionClickedAction() {
         final Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(FRAGMENT_LIST_VIEW);
-        final long result = getDataProvider().undoLastRemoval();
+        final long result = dataProvider.undoLastRemoval();
 
         if (result == RecyclerViewExpandableItemManager.NO_EXPANDABLE_POSITION) {
             return;
