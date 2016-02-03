@@ -17,9 +17,9 @@
 package android.idigisign.com.advancerecycleview;
 
 import android.idigisign.com.advancerecycleview.common.data.AbstractExpandableDataProvider;
-import android.idigisign.com.advancerecycleview.common.widget.ExpandableItemIndicator;
 import android.idigisign.com.advancerecycleview.common.utils.DrawableUtils;
 import android.idigisign.com.advancerecycleview.common.utils.ViewUtils;
+import android.idigisign.com.advancerecycleview.common.widget.ExpandableItemIndicator;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -426,7 +426,11 @@ class MyExpandableDraggableSwipeableItemAdapter
     @Override
     public SwipeResultAction onSwipeGroupItem(MyGroupViewHolder holder, int groupPosition, int result) {
         Log.d(TAG, "onSwipeGroupItem(groupPosition = " + groupPosition + ", result = " + result + ")");
-
+        //We can control the item to enable and disable swipe.
+        if(groupPosition == 3){
+            Log.i("SWIPE","disable swipe for this item");
+            return null;
+        }
         switch (result) {
             // swipe right
             case Swipeable.RESULT_SWIPED_RIGHT:
