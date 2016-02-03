@@ -52,10 +52,16 @@ public class RecyclerListViewFragment extends Fragment
         RecyclerViewExpandableItemManager.OnGroupExpandListener,ExpandableItemPinnedMessageDialogFragment.EventListener{
     private static final String SAVED_STATE_EXPANDABLE_ITEM_MANAGER = "RecyclerViewExpandableItemManager";
 
+    //define the recycler view object
     private RecyclerView mRecyclerView;
+    //define the layoutManager
     private RecyclerView.LayoutManager mLayoutManager;
+    //define the data adapter
     private RecyclerView.Adapter mAdapter;
+    //?
     private RecyclerView.Adapter mWrappedAdapter;
+
+    //define the advance function manager
     private RecyclerViewExpandableItemManager mRecyclerViewExpandableItemManager;
     private RecyclerViewDragDropManager mRecyclerViewDragDropManager;
     private RecyclerViewSwipeManager mRecyclerViewSwipeManager;
@@ -65,6 +71,7 @@ public class RecyclerListViewFragment extends Fragment
     private static final String FRAGMENT_LIST_VIEW = "list view";
     private static final String FRAGMENT_TAG_ITEM_PINNED_DIALOG = "item pinned dialog";
 
+    //define the data provider
     private AbstractExpandableDataProvider dataProvider;
 
     public RecyclerListViewFragment() {
@@ -82,6 +89,7 @@ public class RecyclerListViewFragment extends Fragment
 
         dataProvider = getDataProvider();
 
+        //get the instance of recycler view and the LinearLayoutManager
         //noinspection ConstantConditions
         mRecyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
         mLayoutManager = new LinearLayoutManager(getContext());
@@ -104,7 +112,7 @@ public class RecyclerListViewFragment extends Fragment
         // swipe manager
         mRecyclerViewSwipeManager = new RecyclerViewSwipeManager();
 
-        //adapter
+        //item adapter
         final MyExpandableDraggableSwipeableItemAdapter myItemAdapter =
                 new MyExpandableDraggableSwipeableItemAdapter(mRecyclerViewExpandableItemManager, dataProvider);
 
@@ -137,9 +145,14 @@ public class RecyclerListViewFragment extends Fragment
 
         mAdapter = myItemAdapter;
 
-        mWrappedAdapter = mRecyclerViewExpandableItemManager.createWrappedAdapter(myItemAdapter);       // wrap for expanding
-        mWrappedAdapter = mRecyclerViewDragDropManager.createWrappedAdapter(mWrappedAdapter);           // wrap for dragging
-        mWrappedAdapter = mRecyclerViewSwipeManager.createWrappedAdapter(mWrappedAdapter);      // wrap for swiping
+        //create the wrap adapter base on the basic adapter, according to different Manager,
+        // add different interface to the adapter.
+        // wrap for expanding
+        mWrappedAdapter = mRecyclerViewExpandableItemManager.createWrappedAdapter(myItemAdapter);
+        // wrap for dragging
+        mWrappedAdapter = mRecyclerViewDragDropManager.createWrappedAdapter(mWrappedAdapter);
+        // wrap for swiping
+        mWrappedAdapter = mRecyclerViewSwipeManager.createWrappedAdapter(mWrappedAdapter);
 
         final GeneralItemAnimator animator = new SwipeDismissItemAnimator();
 
@@ -148,7 +161,7 @@ public class RecyclerListViewFragment extends Fragment
         // Also need to disable them when using animation indicator.
         animator.setSupportsChangeAnimations(false);
 
-
+        //configure the RecyclerView
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mWrappedAdapter);  // requires *wrapped* adapter
         mRecyclerView.setItemAnimator(animator);
